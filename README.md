@@ -1,265 +1,240 @@
-# Movie Recommender System
+# Hệ Thống Gợi Ý Phim (Movie Recommender System)
 
-A Django-based movie recommendation system that provides personalized movie suggestions using hybrid filtering (content-based + collaborative filtering).
+Một hệ thống gợi ý phim dựa trên Django cung cấp đề xuất phim cá nhân hóa bằng cách sử dụng bộ lọc kết hợp (content-based + collaborative filtering).
 
-## Features
+## Tính Năng (Features)
 
-- **Hybrid Recommendation Engine**: Combines content-based and collaborative filtering
-- **User Authentication**: Registration, login, and protected views
-- **Movie Search**: Search by title and filter by genre
-- **Rating System**: Rate movies from 1-5 stars
-- **Responsive Design**: Bootstrap 5 with custom CSS
-- **RESTful API**: AJAX rating system
-- **Unit Tests**: Comprehensive test coverage
+- **Công Cụ Gợi Ý Kết Hợp**: Kết hợp bộ lọc dựa trên nội dung và bộ lọc cộng tác
+- **Xác Thực Người Dùng**: Đăng ký, đăng nhập và chế độ xem được bảo vệ
+- **Tìm Kiếm Phim**: Tìm kiếm theo tiêu đề và lọc theo thể loại
+- **Hệ Thống Đánh Giá**: Đánh giá phim từ 1-5 sao
+- **Thiết Kế Responsive**: Bootstrap 5 với CSS tùy chỉnh
+- **RESTful API**: Hệ thống đánh giá AJAX
+- **Kiểm Thử Đơn Vị**: Kiểm thử toàn diện
 
-## Technology Stack
+## Công Nghệ Sử Dụng (Technology Stack)
 
 - **Backend**: Django 4.2, Python 3.11
 - **Frontend**: Bootstrap 5, JavaScript
-- **Database**: SQLite (development), PostgreSQL (production)
-- **ML Libraries**: scikit-learn, scikit-surprise, pandas, numpy
-- **Deployment**: Heroku, Gunicorn
+- **Cơ Sở Dữ Liệu**: SQLite (phát triển), PostgreSQL (sản xuất)
+- **Thư Viện ML**: scikit-learn, scikit-surprise, pandas, numpy
+- **Triển Khai**: Heroku, Gunicorn
 
-## Project Structure
+## Cấu Trúc Dự Án (Project Structure)
 
 ```
 movie_recsys/
-├── recommender/          # Main Django app
-│   ├── models.py        # Movie and Rating models
-│   ├── views.py         # Views for recommendations, search, rating
-│   ├── forms.py         # Rating form
-│   ├── urls.py          # App URL routing
-│   ├── admin.py         # Django admin configuration
-│   ├── recommender_engine.py  # Hybrid recommendation engine
-│   └── tests.py         # Unit tests
-├── movie_recsys/        # Project settings
-├── templates/           # HTML templates
-├── static/             # CSS, JavaScript, images
-├── scripts/            # Database population scripts
-├── data/               # MovieLens dataset
-└── tests/              # Unit tests
+├── recommender/          # Ứng dụng Django chính
+│   ├── models.py        # Các model Movie và Rating
+│   ├── views.py         # Views cho gợi ý, tìm kiếm, đánh giá
+│   ├── forms.py         # Form đánh giá
+│   ├── urls.py          # Định tuyến URL của ứng dụng
+│   ├── admin.py         # Cấu hình Django admin
+│   ├── recommender_engine.py  # Công cụ gợi ý kết hợp
+│   └── tests.py         # Kiểm thử đơn vị
+├── movie_recsys/        # Cài đặt dự án
+├── templates/           # Các template HTML
+├── static/             # CSS, JavaScript, hình ảnh
+├── scripts/            # Các script điền dữ liệu cơ sở dữ liệu
+├── data/               # Tập dữ liệu MovieLens
+└── tests/              # Kiểm thử đơn vị
 ```
 
-## Installation & Setup
+## Cài Đặt & Thiết Lập (Installation & Setup)
 
-### Prerequisites
+### Yêu Cầu Trước (Prerequisites)
 
 - Python 3.11+
 - pip
-- virtualenv (recommended)
+- virtualenv (khuyến nghị)
 
-### Local Development
+### Phát Triển Cục Bộ (Local Development)
 
-1. **Clone the repository**
+1. **Sao chép kho lưu trữ**
    ```bash
    git clone <repository-url>
    cd film
    ```
 
-2. **Create virtual environment**
+2. **Tạo môi trường ảo**
    ```bash
    python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   source venv/bin/activate  # Trên Windows: venv\Scripts\activate
    ```
 
-3. **Install dependencies**
+3. **Cài đặt các phụ thuộc**
    ```bash
    pip install -r requirements.txt
    ```
 
-4. **Run migrations**
+4. **Chạy migrations**
    ```bash
    python manage.py migrate
    ```
 
-5. **Create superuser (optional)**
+5. **Tạo superuser (tùy chọn)**
    ```bash
    python manage.py createsuperuser
    ```
 
-6. **Populate database with sample data**
+6. **Điền dữ liệu mẫu vào cơ sở dữ liệu**
    ```bash
-   # Download MovieLens 20M dataset to data/ml-20m/
-   # Update TMDb API key in scripts/populate_db.py
-   python scripts/populate_db.py
+   # Import dữ liệu nhanh (1000 phim để test)
+   python import_csv_data_fast.py
+
+   # Hoặc import toàn bộ dữ liệu (27278 phim)
+   python import_csv_data.py
    ```
 
-7. **Run development server**
+7. **Chạy máy chủ phát triển**
    ```bash
    python manage.py runserver
    ```
 
-8. **Access the application**
-   - Main site: http://localhost:8000
-   - Admin panel: http://localhost:8000/admin
+8. **Truy cập ứng dụng**
+   - Trang chính: http://localhost:8000
+   - Bảng quản trị: http://localhost:8000/admin
 
-### Running Tests
+### Chạy Kiểm Thử (Running Tests)
 
 ```bash
 python manage.py test tests/
 ```
 
-## Deployment to Heroku
+## Hướng Dẫn Sử Dụng Cho Người Dùng
 
-### Prerequisites
+### 1. Đăng Ký Tài Khoản
+- Vào trang chủ, nhấp "Đăng ký"
+- Tạo tài khoản mới hoặc sử dụng tài khoản demo:
+  - Tên: `demo_user`
+  - Mật khẩu: `demopass123`
 
-- Heroku CLI installed
-- Heroku account
+### 2. Khám Phá Phim
+- **Trang Chủ**: Xem phim phổ biến, được đánh giá cao
+- **Tìm Kiếm**: Tìm phim theo tên hoặc thể loại
+- **Chi Tiết Phim**: Nhấp vào poster để xem thông tin chi tiết
 
-### Deployment Steps
+### 3. Tương Tác Với Hệ Thống
+- **Đánh Giá Phim**: Chấm điểm 1-5 sao
+- **Thêm Vào Watchlist**: Lưu phim muốn xem sau
+- **Xem Gợi Ý**: Vào trang "Đề xuất" để xem phim được gợi ý
 
-1. **Login to Heroku**
-   ```bash
-   heroku login
-   ```
+### 4. Các Script Quan Trọng
 
-2. **Create Heroku app**
-   ```bash
-   heroku create your-app-name
-   ```
-
-3. **Set environment variables**
-   ```bash
-   heroku config:set DEBUG=False
-   heroku config:set SECRET_KEY=your-secret-key
-   heroku config:set DISABLE_COLLECTSTATIC=1
-   ```
-
-4. **Deploy to Heroku**
-   ```bash
-   git push heroku main
-   ```
-
-5. **Run migrations on Heroku**
-   ```bash
-   heroku run python manage.py migrate
-   ```
-
-6. **Create superuser on Heroku**
-   ```bash
-   heroku run python manage.py createsuperuser
-   ```
-
-7. **Open the application**
-   ```bash
-   heroku open
-   ```
-
-### Environment Variables
-
-For production, set these environment variables:
-
+#### `analyze_csv.py`
+Phân tích cấu trúc file CSV trước khi import
 ```bash
-DEBUG=False
-SECRET_KEY=your-secret-key-here
-ALLOWED_HOSTS=your-app.herokuapp.com
-DATABASE_URL=postgres://...
+python analyze_csv.py
 ```
 
-## API Endpoints
+#### `import_csv_data_fast.py`
+Import nhanh 1000 phim để test
+```bash
+python import_csv_data_fast.py
+```
 
-| Endpoint | Method | Description | Auth Required |
-|----------|--------|-------------|---------------|
-| `/` | GET | Home page (search) | No |
-| `/recommendations/` | GET | Personalized recommendations | Yes |
-| `/search/` | GET | Search movies | No |
-| `/movie/<id>/` | GET | Movie details | No |
-| `/movie/<id>/rate/` | POST | Rate a movie | Yes |
-| `/login/` | GET/POST | User login | No |
-| `/logout/` | POST | User logout | Yes |
-| `/register/` | GET/POST | User registration | No |
+#### `import_csv_data.py`
+Import toàn bộ 27278 phim
+```bash
+python import_csv_data.py
+```
 
-## Recommendation Algorithm
+## Cách Hệ Thống Gợi Ý Hoạt Động
 
-The hybrid recommender combines:
+### 1. Cho Người Dùng Mới (Chưa Đánh Giá)
+- Hiển thị **phim phổ biến** nhất
+- Dựa trên số lượng đánh giá và điểm trung bình
 
-1. **Content-Based Filtering** (40% weight)
-   - TF-IDF vectorization of movie genres and overviews
-   - Cosine similarity between movies
+### 2. Cho Người Dùng Đã Đánh Giá
+Kết hợp 3 phương pháp:
 
-2. **Collaborative Filtering** (60% weight)
-   - SVD (Singular Value Decomposition) on user ratings
-   - Matrix factorization for user-movie predictions
+**A. Phân Tích Nội Dung (40%)**
+- So sánh thể loại và mô tả phim
+- Tìm phim tương tự với phim bạn đã thích
 
-3. **Cold Start Handling**
-   - Returns popular movies for new users
-   - Popularity based on rating count and average rating
+**B. Phân Tích Cộng Tác (60%)**
+- Phân tích đánh giá của nhiều người dùng
+- Tìm người có sở thích tương tự bạn
 
-## Data Sources
+**C. Ưu Tiên Watchlist**
+- Cộng thêm điểm cho phim trong danh sách theo dõi
 
-- **MovieLens 20M Dataset**: Movie metadata and ratings
-- **TMDb API**: Movie posters and overviews
+### Công Thức Tính Điểm:
+```
+Điểm gợi ý = (40% × Điểm nội dung) + (60% × Điểm cộng tác) + Ưu tiên watchlist
+```
 
-## Configuration
+## Cấu Trúc Dữ Liệu
 
-### TMDb API Setup
+### File CSV Gốc (trong thư mục `data/ml-20m/`)
+- `movies.csv`: Thông tin phim (id, tên, thể loại)
+- `ratings.csv`: Đánh giá của người dùng
+- `links.csv`: Liên kết đến TMDb, IMDb
 
-1. Get API key from [TMDb](https://www.themoviedb.org/settings/api)
-2. Update `TMDB_API_KEY` in `scripts/populate_db.py`
-3. Run population script
+### Database (SQLite)
+- `recommender_movie`: Bảng phim
+- `recommender_rating`: Bảng đánh giá  
+- `recommender_watchlist`: Bảng danh sách theo dõi
+- `auth_user`: Bảng người dùng
 
-### Database Configuration
+## Mẹo Sử Dụng Hiệu Quả
 
-- **Development**: SQLite
-- **Production**: PostgreSQL (auto-configured on Heroku)
+1. **Đánh giá ít nhất 5 phim** để có gợi ý chính xác
+2. **Thêm phim vào watchlist** để ưu tiên gợi ý
+3. **Đánh giá đa dạng thể loại** để hệ thống hiểu sở thích
+4. **Cập nhật đánh giá** khi xem phim mới
 
-## Development
+## Khắc Phục Sự Cố (Troubleshooting)
 
-### Adding New Features
+### Các Vấn Đề Thường Gặp (Common Issues)
 
-1. Create migrations for model changes:
+1. **Không Thấy Gợi Ý Cá Nhân**
+   - Kiểm tra đã đánh giá ít nhất 3 phim chưa
+   - Đảm bảo đã đăng nhập đúng tài khoản
+
+2. **Lỗi Import Dữ Liệu**
+   - Chạy `python import_csv_data_fast.py` trước để test
+   - Đảm bảo file CSV trong thư mục `data/ml-20m/`
+
+3. **Server Không Chạy**
+   - Kiểm tra đã kích hoạt môi trường ảo
+   - Chạy `python manage.py migrate` trước
+
+## Phát Triển Thêm (Development)
+
+### Thêm Tính Năng Mới (Adding New Features)
+
+1. Tạo migrations cho các thay đổi model:
    ```bash
    python manage.py makemigrations
    python manage.py migrate
    ```
 
-2. Run tests:
+2. Chạy kiểm thử:
    ```bash
    python manage.py test
    ```
 
-3. Check code style:
-   ```bash
-   flake8 .
-   ```
+### Tùy Chỉnh Gợi Ý (Customizing Recommendations)
 
-### Customizing Recommendations
+Sửa đổi `recommender/recommender_engine.py`:
+- Điều chỉnh trọng số kết hợp (hiện tại 40% nội dung, 60% cộng tác)
+- Thay đổi tham số TF-IDF
+- Sửa đổi siêu tham số SVD
 
-Modify `recommender/recommender_engine.py`:
-- Adjust hybrid weights (currently 40% content, 60% collaborative)
-- Change TF-IDF parameters
-- Modify SVD hyperparameters
+## Đóng Góp (Contributing)
 
-## Troubleshooting
+1. Fork kho lưu trữ
+2. Tạo nhánh tính năng
+3. Thực hiện thay đổi và thêm kiểm thử
+4. Gửi pull request
 
-### Common Issues
+## Giấy Phép (License)
 
-1. **TMDb API Rate Limits**
-   - Script includes 0.1s delay between requests
-   - Handle API failures gracefully
+Dự án này được cấp phép theo Giấy phép MIT.
 
-2. **Memory Issues with Large Datasets**
-   - Script processes only first 5000 movies for testing
-   - Increase `MAX_MOVIES` in population script for production
+## Ghi Nhận (Acknowledgments)
 
-3. **Heroku Deployment Failures**
-   - Check build logs: `heroku logs --tail`
-   - Verify requirements.txt includes all dependencies
-   - Ensure Procfile is in root directory
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make changes and add tests
-4. Submit a pull request
-
-## License
-
-This project is licensed under the MIT License.
-
-## Acknowledgments
-
-- MovieLens dataset for movie ratings
-- TMDb for movie metadata and posters
-- Django community for excellent documentation
+- Tập dữ liệu MovieLens cho đánh giá phim
+- TMDb cho siêu dữ liệu phim và poster
+- Cộng đồng Django cho tài liệu xuất sắc
