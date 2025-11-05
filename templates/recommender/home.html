@@ -2,28 +2,28 @@
 {% load static %}
 
 {% block content %}
-<!-- Hero Section -->
-<div class="hero-section mb-5" style="height: 70vh; background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1489599809505-7c8e45128d6f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80'); background-size: cover; background-position: center;">
+<!-- Phần Hero chính với hình nền ấn tượng -->
+<div class="hero-section mb-5" style="height: 70vh; background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80'); background-size: cover; background-position: center;">
     <div class="container h-100 d-flex align-items-center">
-        <div class="hero-content text-white">
-            <h1 class="display-4 fw-bold mb-3">Unlimited movies, TV shows, and more.</h1>
-            <p class="lead mb-4">Watch anywhere. Cancel anytime.</p>
+        <div class="hero-content text-white text-center">
+            <h1 class="display-3 fw-bold mb-3">Phim không giới hạn, chương trình TV và hơn thế nữa.</h1>
+            <p class="lead mb-4 fs-4">Xem ở mọi nơi. Hủy bất cứ lúc nào.</p>
             {% if not user.is_authenticated %}
             <div class="hero-buttons">
                 <a href="{% url 'recommender:register' %}" class="btn btn-danger btn-lg me-3">
-                    Get Started <i class="bi bi-arrow-right"></i>
+                    Bắt đầu <i class="bi bi-arrow-right"></i>
                 </a>
                 <a href="{% url 'recommender:login' %}" class="btn btn-outline-light btn-lg">
-                    Sign In
+                    Đăng nhập
                 </a>
             </div>
             {% else %}
             <div class="hero-buttons">
                 <a href="{% url 'recommender:search' %}" class="btn btn-danger btn-lg me-3">
-                    Browse Movies <i class="bi bi-play-fill"></i>
+                    Duyệt phim <i class="bi bi-play-fill"></i>
                 </a>
                 <a href="{% url 'recommender:recommendations' %}" class="btn btn-outline-light btn-lg">
-                    My Recommendations
+                    Đề xuất của tôi
                 </a>
             </div>
             {% endif %}
@@ -31,12 +31,12 @@
     </div>
 </div>
 
-<!-- Movie Rows -->
+<!-- Các hàng phim -->
 <div class="container-fluid px-4">
-    <!-- Top Rated Movies -->
+    <!-- Phim được đánh giá cao nhất -->
     <section class="movie-row mb-5">
         <h2 class="section-title mb-4">
-            <i class="bi bi-star-fill text-warning me-2"></i>Top Rated Movies
+            <i class="bi bi-star-fill text-warning me-2"></i>Phim được đánh giá cao nhất
         </h2>
         <div class="owl-carousel owl-theme movie-carousel">
             {% for movie in top_rated_movies %}
@@ -44,7 +44,7 @@
                 <div class="card bg-dark border-0 movie-poster-card">
                     {% if movie.poster_url %}
                     <img src="{{ movie.poster_url }}" class="card-img-top" alt="{{ movie.title }}" 
-                         onerror="this.src='https://via.placeholder.com/300x450/333333/ffffff?text=No+Image'">
+                         onerror="this.src='https://via.placeholder.com/300x450/333333/ffffff?text=Không+có+hình'">
                     {% else %}
                     <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" 
                          style="height: 300px;">
@@ -81,10 +81,10 @@
         </div>
     </section>
 
-    <!-- Popular Movies -->
+    <!-- Phim phổ biến -->
     <section class="movie-row mb-5">
         <h2 class="section-title mb-4">
-            <i class="bi bi-fire text-danger me-2"></i>Popular Now
+            <i class="bi bi-fire text-danger me-2"></i>Phim phổ biến hiện nay
         </h2>
         <div class="owl-carousel owl-theme movie-carousel">
             {% for movie in popular_movies %}
@@ -92,7 +92,7 @@
                 <div class="card bg-dark border-0 movie-poster-card">
                     {% if movie.poster_url %}
                     <img src="{{ movie.poster_url }}" class="card-img-top" alt="{{ movie.title }}"
-                         onerror="this.src='https://via.placeholder.com/300x450/333333/ffffff?text=No+Image'">
+                         onerror="this.src='https://via.placeholder.com/300x450/333333/ffffff?text=Không+có+hình'">
                     {% else %}
                     <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" 
                          style="height: 300px;">
@@ -129,11 +129,11 @@
         </div>
     </section>
 
-    <!-- Recommended for You (only for authenticated users) -->
+    <!-- Đề xuất cho bạn (chỉ cho người dùng đã đăng nhập) -->
     {% if user.is_authenticated and recommended_movies %}
     <section class="movie-row mb-5">
         <h2 class="section-title mb-4">
-            <i class="bi bi-heart-fill text-danger me-2"></i>Recommended for You
+            <i class="bi bi-heart-fill text-danger me-2"></i>Đề xuất cho bạn
         </h2>
         <div class="owl-carousel owl-theme movie-carousel">
             {% for movie in recommended_movies %}
@@ -141,7 +141,7 @@
                 <div class="card bg-dark border-0 movie-poster-card">
                     {% if movie.poster_url %}
                     <img src="{{ movie.poster_url }}" class="card-img-top" alt="{{ movie.title }}"
-                         onerror="this.src='https://via.placeholder.com/300x450/333333/ffffff?text=No+Image'">
+                         onerror="this.src='https://via.placeholder.com/300x450/333333/ffffff?text=Không+có+hình'">
                     {% else %}
                     <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" 
                          style="height: 300px;">
@@ -177,10 +177,10 @@
     </section>
     {% endif %}
 
-    <!-- Browse by Genre -->
+    <!-- Duyệt theo thể loại -->
     <section class="movie-row mb-5">
         <h2 class="section-title mb-4">
-            <i class="bi bi-collection-play text-info me-2"></i>Browse by Genre
+            <i class="bi bi-collection-play text-info me-2"></i>Duyệt theo thể loại
         </h2>
         <div class="row">
             {% for genre in genres %}
@@ -200,13 +200,13 @@
     </section>
 </div>
 
-<!-- Rating Modal -->
+<!-- Modal đánh giá -->
 {% if user.is_authenticated %}
 <div class="modal fade" id="ratingModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content bg-dark text-light">
             <div class="modal-header border-secondary">
-                <h5 class="modal-title">Rate <span id="movieTitle"></span></h5>
+                <h5 class="modal-title">Đánh giá <span id="movieTitle"></span></h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -214,7 +214,7 @@
                     {% csrf_token %}
                     <input type="hidden" name="movie_id" id="modalMovieId">
                     <div class="mb-3">
-                        <label class="form-label">Your Rating (1-5 stars)</label>
+                        <label class="form-label">Đánh giá của bạn (1-5 sao)</label>
                         <div class="rating-stars mb-3 text-center">
                             {% for i in "12345" %}
                             <button type="button" class="btn btn-outline-warning star-btn" data-rating="{{ i }}">
@@ -228,8 +228,8 @@
                 </form>
             </div>
             <div class="modal-footer border-secondary">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" form="ratingForm" class="btn btn-danger">Submit Rating</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="submit" form="ratingForm" class="btn btn-danger">Gửi đánh giá</button>
             </div>
         </div>
     </div>
@@ -240,7 +240,7 @@
 {% block extra_js %}
 <script>
 $(document).ready(function(){
-    // Initialize carousels
+    // Khởi tạo carousels
     $('.movie-carousel').owlCarousel({
         loop: true,
         margin: 15,
@@ -276,7 +276,7 @@ document.addEventListener('DOMContentLoaded', function() {
             modalMovieId.value = movieId;
             ratingInput.value = '3.0';
             
-            // Reset star buttons
+            // Đặt lại các nút sao
             starButtons.forEach(star => {
                 star.classList.remove('btn-warning');
                 star.classList.add('btn-outline-warning');
@@ -286,13 +286,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Star rating selection
+    // Chọn đánh giá sao
     starButtons.forEach(star => {
         star.addEventListener('click', function() {
             const rating = this.dataset.rating;
             ratingInput.value = rating;
             
-            // Update star buttons appearance
+            // Cập nhật giao diện các nút sao
             starButtons.forEach(s => {
                 if (s.dataset.rating <= rating) {
                     s.classList.add('btn-warning');
@@ -305,7 +305,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Form submission
+    // Gửi form
     document.getElementById('ratingForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const formData = new FormData(this);
@@ -321,7 +321,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Show success message
+                // Hiển thị thông báo thành công
                 const alert = document.createElement('div');
                 alert.className = 'alert alert-success alert-dismissible fade show';
                 alert.innerHTML = `
@@ -332,12 +332,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 ratingModal.hide();
             } else {
-                alert('Error: ' + JSON.stringify(data.errors));
+                alert('Lỗi: ' + JSON.stringify(data.errors));
             }
         })
         .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while submitting your rating.');
+            console.error('Lỗi:', error);
+            alert('Đã xảy ra lỗi khi gửi đánh giá của bạn.');
         });
     });
 });

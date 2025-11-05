@@ -23,37 +23,37 @@ class HybridRecommender:
         self.cache_dir = Path('recommender/cache')
         self.cache_dir.mkdir(exist_ok=True)
         
-        # Load data and build models
+        # Tải dữ liệu và xây dựng mô hình
         self._load_data()
         self._build_content_model()
         self._build_collaborative_model()
     
     def _load_data(self):
-        """Load data from database using pandas"""
-        print("Loading data from database...")
+        """Tải dữ liệu từ cơ sở dữ liệu sử dụng pandas"""
+        print("Đang tải dữ liệu từ cơ sở dữ liệu...")
         
-        # Load movies
+        # Tải phim
         movies_query = """
         SELECT id, title, genre, overview, tmdb_id 
         FROM recommender_movie
         """
         self.movies_df = pd.read_sql_query(movies_query, connection)
         
-        # Load ratings
+        # Tải đánh giá
         ratings_query = """
         SELECT id, user_id, movie_id, rating, timestamp 
         FROM recommender_rating
         """
         self.ratings_df = pd.read_sql_query(ratings_query, connection)
         
-        # Load watchlist
+        # Tải danh sách theo dõi
         watchlist_query = """
         SELECT id, user_id, movie_id, added_at 
         FROM recommender_watchlist
         """
         self.watchlist_df = pd.read_sql_query(watchlist_query, connection)
         
-        print(f"Loaded {len(self.movies_df)} movies, {len(self.ratings_df)} ratings, and {len(self.watchlist_df)} watchlist entries")
+        print(f"Đã tải {len(self.movies_df)} phim, {len(self.ratings_df)} đánh giá, và {len(self.watchlist_df)} mục trong danh sách theo dõi")
     
     def _build_content_model(self):
         """Build content-based model using TF-IDF on genre + overview"""

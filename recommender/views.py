@@ -16,18 +16,18 @@ from .recommender_engine import HybridRecommender
 
 
 def home(request):
-    """Netflix-style home page with movie rows and carousels"""
-    # Get top rated movies (by average rating)
+    """Trang chủ kiểu Netflix với các hàng phim và carousel"""
+    # Lấy phim được đánh giá cao nhất (theo điểm trung bình)
     top_rated_movies = Movie.objects.annotate(
         avg_rating=Avg('rating__rating')
     ).filter(avg_rating__isnull=False).order_by('-avg_rating')[:20]
     
-    # Get popular movies (by number of ratings)
+    # Lấy phim phổ biến (theo số lượng đánh giá)
     popular_movies = Movie.objects.annotate(
         rating_count=Count('rating')
     ).filter(rating_count__gt=0).order_by('-rating_count')[:20]
     
-    # Get recommended movies for logged-in users
+    # Lấy phim đề xuất cho người dùng đã đăng nhập
     recommended_movies = []
     if request.user.is_authenticated:
         try:
@@ -38,10 +38,10 @@ def home(request):
             )
             recommended_movies = Movie.objects.filter(id__in=recommended_movie_ids)
         except Exception as e:
-            # Fallback: use popular movies if recommendation fails
+            # Fallback: sử dụng phim phổ biến nếu đề xuất thất bại
             recommended_movies = popular_movies[:10]
     
-    # Get unique genres for browse section
+    # Lấy thể loại duy nhất cho phần duyệt
     all_genres = Movie.objects.values_list('genre', flat=True).distinct()
     unique_genres = set()
     for genre_str in all_genres:
@@ -53,7 +53,7 @@ def home(request):
         'top_rated_movies': top_rated_movies,
         'popular_movies': popular_movies,
         'recommended_movies': recommended_movies,
-        'genres': sorted(unique_genres)[:12],  # Limit to 12 genres for display
+        'genres': sorted(unique_genres)[:12],  # Giới hạn 12 thể loại để hiển thị
     }
     
     return render(request, 'recommender/home.html', context)

@@ -48,14 +48,14 @@ def get_tmdb_movie_details(tmdb_id):
 
 def populate_movies():
     """Populate Movie objects with sample data (no TMDb API)"""
-    # Sample movie data for testing
+    # Dữ liệu phim mẫu để kiểm thử với hình ảnh thực tế
     sample_movies = [
         {
             'title': 'The Shawshank Redemption',
             'genre': 'Drama',
             'release_year': 1994,
             'overview': 'Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.',
-            'poster_url': 'https://via.placeholder.com/300x450/333333/ffffff?text=Shawshank',
+            'poster_url': 'https://image.tmdb.org/t/p/w500/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg',
             'director': 'Frank Darabont'
         },
         {
@@ -63,7 +63,7 @@ def populate_movies():
             'genre': 'Crime|Drama',
             'release_year': 1972,
             'overview': 'The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.',
-            'poster_url': 'https://via.placeholder.com/300x450/333333/ffffff?text=Godfather',
+            'poster_url': 'https://image.tmdb.org/t/p/w500/3bhkrj58Vtu7enYsRolD1fZdja1.jpg',
             'director': 'Francis Ford Coppola'
         },
         {
@@ -71,7 +71,7 @@ def populate_movies():
             'genre': 'Action|Crime|Drama',
             'release_year': 2008,
             'overview': 'When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.',
-            'poster_url': 'https://via.placeholder.com/300x450/333333/ffffff?text=Dark+Knight',
+            'poster_url': 'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg',
             'director': 'Christopher Nolan'
         },
         {
@@ -79,7 +79,7 @@ def populate_movies():
             'genre': 'Crime|Drama',
             'release_year': 1994,
             'overview': 'The lives of two mob hitmen, a boxer, a gangster and his wife, and a pair of diner bandits intertwine in four tales of violence and redemption.',
-            'poster_url': 'https://via.placeholder.com/300x450/333333/ffffff?text=Pulp+Fiction',
+            'poster_url': 'https://image.tmdb.org/t/p/w500/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg',
             'director': 'Quentin Tarantino'
         },
         {
@@ -87,7 +87,7 @@ def populate_movies():
             'genre': 'Drama|Romance',
             'release_year': 1994,
             'overview': 'The presidencies of Kennedy and Johnson, the Vietnam War, the Watergate scandal and other historical events unfold from the perspective of an Alabama man with an IQ of 75.',
-            'poster_url': 'https://via.placeholder.com/300x450/333333/ffffff?text=Forrest+Gump',
+            'poster_url': 'https://image.tmdb.org/t/p/w500/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg',
             'director': 'Robert Zemeckis'
         },
         {
@@ -95,7 +95,7 @@ def populate_movies():
             'genre': 'Action|Adventure|Sci-Fi',
             'release_year': 2010,
             'overview': 'A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.',
-            'poster_url': 'https://via.placeholder.com/300x450/333333/ffffff?text=Inception',
+            'poster_url': 'https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg',
             'director': 'Christopher Nolan'
         },
         {
@@ -103,7 +103,7 @@ def populate_movies():
             'genre': 'Action|Sci-Fi',
             'release_year': 1999,
             'overview': 'A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.',
-            'poster_url': 'https://via.placeholder.com/300x450/333333/ffffff?text=Matrix',
+            'poster_url': 'https://image.tmdb.org/t/p/w500/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg',
             'director': 'Lana Wachowski, Lilly Wachowski'
         },
         {
@@ -111,7 +111,7 @@ def populate_movies():
             'genre': 'Biography|Crime|Drama',
             'release_year': 1990,
             'overview': 'The story of Henry Hill and his life in the mob, covering his relationship with his wife Karen Hill and his mob partners Jimmy Conway and Tommy DeVito.',
-            'poster_url': 'https://via.placeholder.com/300x450/333333/ffffff?text=Goodfellas',
+            'poster_url': 'https://image.tmdb.org/t/p/w500/aKuFiU82s5ISJpGZp7YkIr3kCUd.jpg',
             'director': 'Martin Scorsese'
         },
         {
@@ -119,7 +119,7 @@ def populate_movies():
             'genre': 'Crime|Drama|Thriller',
             'release_year': 1991,
             'overview': 'A young F.B.I. cadet must receive the help of an incarcerated and manipulative cannibal killer to help catch another serial killer.',
-            'poster_url': 'https://via.placeholder.com/300x450/333333/ffffff?text=Silence+Lambs',
+            'poster_url': 'https://image.tmdb.org/t/p/w500/uS9m8OBk1A8eM9I042bx8XXpqAq.jpg',
             'director': 'Jonathan Demme'
         },
         {
@@ -127,7 +127,7 @@ def populate_movies():
             'genre': 'Adventure|Drama|Fantasy',
             'release_year': 2001,
             'overview': 'A meek Hobbit from the Shire and eight companions set out on a journey to destroy the powerful One Ring and save Middle-earth from the Dark Lord Sauron.',
-            'poster_url': 'https://via.placeholder.com/300x450/333333/ffffff?text=LOTR',
+            'poster_url': 'https://image.tmdb.org/t/p/w500/6oom5QYQ2yQTMJIbnvbkBL9cHo6.jpg',
             'director': 'Peter Jackson'
         }
     ]
