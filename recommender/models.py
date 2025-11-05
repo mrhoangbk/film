@@ -13,6 +13,28 @@ class Movie(models.Model):
     
     def __str__(self):
         return self.title
+    
+    def get_first_genre(self):
+        """Get the first genre from the genre string"""
+        if self.genre and '|' in self.genre:
+            return self.genre.split('|')[0]
+        return self.genre or "Không rõ"
+    
+    def get_rating_display(self):
+        """Get formatted rating display"""
+        from django.db.models import Avg
+        avg_rating = self.rating_set.aggregate(Avg('rating'))['rating__avg']
+        if avg_rating:
+            return f"{avg_rating:.1f}/5.0"
+        return "Chưa có đánh giá"
+    
+    def get_genres_list(self):
+        """Get list of genres from the genre string"""
+        if self.genre and '|' in self.genre:
+            return [g.strip() for g in self.genre.split('|')]
+        elif self.genre:
+            return [self.genre]
+        return ["Không rõ"]
 
 
 class Rating(models.Model):

@@ -41,39 +41,45 @@
         <div class="owl-carousel owl-theme movie-carousel">
             {% for movie in top_rated_movies %}
             <div class="movie-card">
-                <div class="card bg-dark border-0 movie-poster-card">
-                    {% if movie.poster_url %}
+                <div class="card bg-dark border-0 h-100">
+                    {% if movie.poster_url and movie.poster_url != "None" %}
                     <img src="{{ movie.poster_url }}" class="card-img-top" alt="{{ movie.title }}" 
                          style="height: 200px; object-fit: cover;"
                          onerror="this.src='https://via.placeholder.com/200x300/333333/ffffff?text=Không+có+hình'">
                     {% else %}
                     <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" 
                          style="height: 200px;">
-                        <i class="bi bi-film text-light" style="font-size: 2rem;"></i>
+                        <i class="bi bi-film text-light" style="font-size: 4rem;"></i>
                     </div>
                     {% endif %}
                     
-                    <div class="card-overlay">
-                        <div class="overlay-content">
-                            <h6 class="movie-title">{{ movie.title }}</h6>
-                            <p class="movie-year small text-light" style="opacity: 0.9;">{{ movie.release_year }}</p>
-                            <div class="movie-rating">
-                                <i class="bi bi-star-fill text-warning"></i>
-                                <span class="ms-1">{{ movie.avg_rating|default:"Chưa có" }}</span>
-                            </div>
-                            <div class="movie-actions mt-2">
-                                <a href="{% url 'recommender:movie_detail' movie.id %}" 
-                                   class="btn btn-sm btn-outline-light me-1">
-                                    <i class="bi bi-info-circle"></i>
-                                </a>
-                                {% if user.is_authenticated %}
-                                <button class="btn btn-sm btn-danger rate-btn" 
-                                        data-movie-id="{{ movie.id }}"
-                                        data-movie-title="{{ movie.title }}">
-                                    <i class="bi bi-play-fill"></i>
-                                </button>
+                    <div class="card-body p-2 d-flex flex-column">
+                        <h6 class="movie-title mb-1 text-truncate" title="{{ movie.title }}">{{ movie.title }}</h6>
+                        <p class="movie-year small text-light mb-1" style="opacity: 0.9;">
+                            {{ movie.release_year }} • {{ movie.get_first_genre }}
+                        </p>
+                        <div class="movie-rating mb-2">
+                            <i class="bi bi-star-fill text-warning"></i>
+                            <span class="ms-1 small">
+                                {% if movie.avg_rating %}
+                                    {{ movie.avg_rating|floatformat:1 }}/5.0
+                                {% else %}
+                                    Chưa có đánh giá
                                 {% endif %}
-                            </div>
+                            </span>
+                        </div>
+                        <div class="movie-actions mt-auto d-flex justify-content-center">
+                            <a href="{% url 'recommender:movie_detail' movie.id %}" 
+                               class="btn btn-sm btn-outline-light me-1">
+                                <i class="bi bi-info-circle"></i>
+                            </a>
+                            {% if user.is_authenticated %}
+                            <button class="btn btn-sm btn-danger rate-btn" 
+                                    data-movie-id="{{ movie.id }}"
+                                    data-movie-title="{{ movie.title }}">
+                                <i class="bi bi-play-fill"></i>
+                            </button>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -90,39 +96,45 @@
         <div class="owl-carousel owl-theme movie-carousel">
             {% for movie in popular_movies %}
             <div class="movie-card">
-                <div class="card bg-dark border-0 movie-poster-card">
-                    {% if movie.poster_url %}
+                <div class="card bg-dark border-0 h-100">
+                    {% if movie.poster_url and movie.poster_url != "None" %}
                     <img src="{{ movie.poster_url }}" class="card-img-top" alt="{{ movie.title }}"
                          style="height: 200px; object-fit: cover;"
                          onerror="this.src='https://via.placeholder.com/200x300/333333/ffffff?text=Không+có+hình'">
                     {% else %}
                     <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" 
                          style="height: 200px;">
-                        <i class="bi bi-film text-light" style="font-size: 2rem;"></i>
+                        <i class="bi bi-film text-light" style="font-size: 4rem;"></i>
                     </div>
                     {% endif %}
                     
-                    <div class="card-overlay">
-                        <div class="overlay-content">
-                            <h6 class="movie-title">{{ movie.title }}</h6>
-                            <p class="movie-year small text-light" style="opacity: 0.9;">{{ movie.release_year }}</p>
-                            <div class="movie-rating">
-                                <i class="bi bi-star-fill text-warning"></i>
-                                <span class="ms-1">{{ movie.avg_rating|default:"Chưa có" }}</span>
-                            </div>
-                            <div class="movie-actions mt-2">
-                                <a href="{% url 'recommender:movie_detail' movie.id %}" 
-                                   class="btn btn-sm btn-outline-light me-1">
-                                    <i class="bi bi-info-circle"></i>
-                                </a>
-                                {% if user.is_authenticated %}
-                                <button class="btn btn-sm btn-danger rate-btn" 
-                                        data-movie-id="{{ movie.id }}"
-                                        data-movie-title="{{ movie.title }}">
-                                    <i class="bi bi-play-fill"></i>
-                                </button>
+                    <div class="card-body p-2 d-flex flex-column">
+                        <h6 class="movie-title mb-1 text-truncate" title="{{ movie.title }}">{{ movie.title }}</h6>
+                        <p class="movie-year small text-light mb-1" style="opacity: 0.9;">
+                            {{ movie.release_year }} • {{ movie.get_first_genre }}
+                        </p>
+                        <div class="movie-rating mb-2">
+                            <i class="bi bi-star-fill text-warning"></i>
+                            <span class="ms-1 small">
+                                {% if movie.avg_rating %}
+                                    {{ movie.avg_rating|floatformat:1 }}/5.0
+                                {% else %}
+                                    Chưa có đánh giá
                                 {% endif %}
-                            </div>
+                            </span>
+                        </div>
+                        <div class="movie-actions mt-auto d-flex justify-content-center">
+                            <a href="{% url 'recommender:movie_detail' movie.id %}" 
+                               class="btn btn-sm btn-outline-light me-1">
+                                <i class="bi bi-info-circle"></i>
+                            </a>
+                            {% if user.is_authenticated %}
+                            <button class="btn btn-sm btn-danger rate-btn" 
+                                    data-movie-id="{{ movie.id }}"
+                                    data-movie-title="{{ movie.title }}">
+                                <i class="bi bi-play-fill"></i>
+                            </button>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -140,37 +152,43 @@
         <div class="owl-carousel owl-theme movie-carousel">
             {% for movie in recommended_movies %}
             <div class="movie-card">
-                <div class="card bg-dark border-0 movie-poster-card">
-                    {% if movie.poster_url %}
+                <div class="card bg-dark border-0 h-100">
+                    {% if movie.poster_url and movie.poster_url != "None" %}
                     <img src="{{ movie.poster_url }}" class="card-img-top" alt="{{ movie.title }}"
                          style="height: 200px; object-fit: cover;"
                          onerror="this.src='https://via.placeholder.com/200x300/333333/ffffff?text=Không+có+hình'">
                     {% else %}
                     <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" 
                          style="height: 200px;">
-                        <i class="bi bi-film text-light" style="font-size: 2rem;"></i>
+                        <i class="bi bi-film text-light" style="font-size: 4rem;"></i>
                     </div>
                     {% endif %}
                     
-                    <div class="card-overlay">
-                        <div class="overlay-content">
-                            <h6 class="movie-title">{{ movie.title }}</h6>
-                            <p class="movie-year small text-light" style="opacity: 0.9;">{{ movie.release_year }}</p>
-                            <div class="movie-rating">
-                                <i class="bi bi-star-fill text-warning"></i>
-                                <span class="ms-1">{{ movie.avg_rating|default:"Chưa có" }}</span>
-                            </div>
-                            <div class="movie-actions mt-2">
-                                <a href="{% url 'recommender:movie_detail' movie.id %}" 
-                                   class="btn btn-sm btn-outline-light me-1">
-                                    <i class="bi bi-info-circle"></i>
-                                </a>
-                                <button class="btn btn-sm btn-danger rate-btn" 
-                                        data-movie-id="{{ movie.id }}"
-                                        data-movie-title="{{ movie.title }}">
-                                    <i class="bi bi-play-fill"></i>
-                                </button>
-                            </div>
+                    <div class="card-body p-2 d-flex flex-column">
+                        <h6 class="movie-title mb-1 text-truncate" title="{{ movie.title }}">{{ movie.title }}</h6>
+                        <p class="movie-year small text-light mb-1" style="opacity: 0.9;">
+                            {{ movie.release_year }} • {{ movie.get_first_genre }}
+                        </p>
+                        <div class="movie-rating mb-2">
+                            <i class="bi bi-star-fill text-warning"></i>
+                            <span class="ms-1 small">
+                                {% if movie.avg_rating %}
+                                    {{ movie.avg_rating|floatformat:1 }}/5.0
+                                {% else %}
+                                    Chưa có đánh giá
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="movie-actions mt-auto d-flex justify-content-center">
+                            <a href="{% url 'recommender:movie_detail' movie.id %}" 
+                               class="btn btn-sm btn-outline-light me-1">
+                                <i class="bi bi-info-circle"></i>
+                            </a>
+                            <button class="btn btn-sm btn-danger rate-btn" 
+                                    data-movie-id="{{ movie.id }}"
+                                    data-movie-title="{{ movie.title }}">
+                                <i class="bi bi-play-fill"></i>
+                            </button>
                         </div>
                     </div>
                 </div>

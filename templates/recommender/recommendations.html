@@ -3,31 +3,37 @@
 
 {% block content %}
 <div class="container-fluid px-4 mt-3">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="section-title mb-2">
-                <i class="bi bi-heart-fill text-danger me-2"></i>Recommended for You
-            </h1>
-            <p class="text-muted mb-0">Movies tailored to your taste based on your ratings</p>
-        </div>
-        <span class="badge bg-danger fs-6">{{ recommended_movies|length }} movies</span>
-    </div>
-
-    {% if recommended_movies %}
-    <!-- Recommendations Grid -->
+    <!-- PHẦN 1: Đề xuất cho bạn -->
     <section class="movie-row mb-5">
-        <div class="row movies-container" data-category="recommended">
-            {% for movie in recommended_movies %}
+        <h2 class="section-title mb-3">
+            <i class="bi bi-heart-fill text-danger me-2"></i>PHẦN 1: "Đề xuất cho bạn"
+        </h2>
+        <p class="text-light mb-4" style="font-size: 1.1rem; opacity: 0.9;">Phim được cá nhân hóa dựa trên hành vi và sở thích của bạn</p>
+        
+        <div class="alert alert-dark mb-4">
+            <h6 class="alert-heading">Hybrid Recommendation Algorithm</h6>
+            <p class="mb-2"><strong>Công thức:</strong> Score = 0.4 × Content-Based + 0.6 × Collaborative + Watchlist_Bonus</p>
+            <ul class="mb-0 small">
+                <li><strong>Content-Based:</strong> TF-IDF trên [genre + overview] → cosine similarity</li>
+                <li><strong>Collaborative:</strong> SVD (Surprise) dự đoán từ user-item matrix</li>
+                <li><strong>Watchlist Bonus:</strong> +0.2 nếu phim trong My List</li>
+            </ul>
+        </div>
+
+        {% if hybrid_recommendations %}
+        <div class="row movies-container">
+            {% for movie in hybrid_recommendations %}
             <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-4">
                 <div class="movie-card" data-movie-id="{{ movie.id }}">
                     <div class="movie-poster-container">
                         {% if movie.poster_url %}
                         <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" class="movie-poster"
-                             onerror="this.src='https://via.placeholder.com/300x450/333333/ffffff?text=No+Image'">
+                             style="width: 185px; height: 278px; object-fit: cover;"
+                             onerror="this.src='https://via.placeholder.com/185x278/333333/ffffff?text=No+Poster'">
                         {% else %}
-                        <div class="movie-poster bg-secondary d-flex align-items-center justify-content-center">
-                            <i class="bi bi-film text-light" style="font-size: 3rem;"></i>
+                        <div class="movie-poster bg-secondary d-flex align-items-center justify-content-center"
+                             style="width: 185px; height: 278px;">
+                            <i class="bi bi-film text-light" style="font-size: 2rem;"></i>
                         </div>
                         {% endif %}
                         <div class="movie-overlay">
@@ -35,11 +41,17 @@
                                 <h6 class="movie-title">{{ movie.title }}</h6>
                                 <p class="movie-meta">
                                     <span class="release-year">{{ movie.release_year }}</span>
-                                    <span class="genre">{{ movie.genre|default:"Unknown"|truncatewords:3 }}</span>
+                                    <span class="genre">{{ movie.genre|default:"Unknown"|truncatewords:2 }}</span>
                                 </p>
                                 <div class="movie-rating mb-2">
                                     <i class="bi bi-star-fill text-warning"></i>
-                                    <span class="ms-1">{{ movie.avg_rating|default:"N/A" }}</span>
+                                    <span class="ms-1">
+                                        {% if movie.avg_rating %}
+                                            {{ movie.avg_rating|floatformat:1 }}/5.0
+                                        {% else %}
+                                            Chưa có đánh giá
+                                        {% endif %}
+                                    </span>
                                 </div>
                                 <div class="movie-actions">
                                     <button class="btn btn-sm btn-danger play-btn" 
@@ -60,51 +72,74 @@
             </div>
             {% endfor %}
         </div>
-        <!-- Load More Trigger -->
-        <div class="load-more-trigger"></div>
+        {% else %}
+        <div class="text-center py-4">
+            <i class="bi bi-heart display-1 text-muted"></i>
+            <h4 class="text-muted mt-3">Chưa có đề xuất nào</h4>
+            <p class="text-muted">Hãy đánh giá một số phim để nhận đề xuất cá nhân hóa!</p>
+        </div>
+        {% endif %}
     </section>
 
-    <!-- Recently Rated Movies -->
-    {% if user_ratings %}
+    <!-- PHẦN 2: Phim trong danh sách của bạn -->
     <section class="movie-row mb-5">
-        <h2 class="section-title mb-4">
-            <i class="bi bi-star-fill text-warning me-2"></i>Your Rated Movies
+        <h2 class="section-title mb-3">
+            <i class="bi bi-bookmark-fill text-primary me-2"></i>Phim trong danh sách của bạn
         </h2>
-        <div class="row">
-            {% for rating in user_ratings %}
+        <p class="text-muted mb-4">Các phim bạn đã lưu vào My List</p>
+        
+        <div class="alert alert-dark mb-4">
+            <h6 class="alert-heading">Watchlist Priority Boost</h6>
+            <ul class="mb-0 small">
+                <li>Ưu tiên hiển thị đầu tiên</li>
+                <li>+0.2 vào Hybrid Score</li>
+                <li>Dữ liệu: bảng Watchlist (ManyToMany: User ↔ Movie)</li>
+            </ul>
+        </div>
+
+        {% if watchlist_movies %}
+        <div class="row movies-container">
+            {% for movie in watchlist_movies %}
             <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-4">
-                <div class="movie-card" data-movie-id="{{ rating.movie.id }}">
+                <div class="movie-card" data-movie-id="{{ movie.id }}">
                     <div class="movie-poster-container">
-                        {% if rating.movie.poster_url %}
-                        <img src="{{ rating.movie.poster_url }}" alt="{{ rating.movie.title }}" class="movie-poster"
-                             onerror="this.src='https://via.placeholder.com/300x450/333333/ffffff?text=No+Image'">
+                        {% if movie.poster_url %}
+                        <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" class="movie-poster"
+                             style="width: 185px; height: 278px; object-fit: cover;"
+                             onerror="this.src='https://via.placeholder.com/185x278/333333/ffffff?text=No+Poster'">
                         {% else %}
-                        <div class="movie-poster bg-secondary d-flex align-items-center justify-content-center">
-                            <i class="bi bi-film text-light" style="font-size: 3rem;"></i>
+                        <div class="movie-poster bg-secondary d-flex align-items-center justify-content-center"
+                             style="width: 185px; height: 278px;">
+                            <i class="bi bi-film text-light" style="font-size: 2rem;"></i>
                         </div>
                         {% endif %}
                         <div class="movie-overlay">
                             <div class="movie-info">
-                                <h6 class="movie-title">{{ rating.movie.title }}</h6>
+                                <h6 class="movie-title">{{ movie.title }}</h6>
                                 <p class="movie-meta">
-                                    <span class="release-year">{{ rating.movie.release_year }}</span>
-                                    <span class="genre">{{ rating.movie.genre|default:"Unknown"|truncatewords:3 }}</span>
+                                    <span class="release-year">{{ movie.release_year }}</span>
+                                    <span class="genre">{{ movie.genre|default:"Unknown"|truncatewords:2 }}</span>
                                 </p>
                                 <div class="movie-rating mb-2">
                                     <i class="bi bi-star-fill text-warning"></i>
-                                    <span class="ms-1">{{ rating.rating }}</span>
+                                    <span class="ms-1">
+                                        {% if movie.avg_rating %}
+                                            {{ movie.avg_rating|floatformat:1 }}/5.0
+                                        {% else %}
+                                            Chưa có đánh giá
+                                        {% endif %}
+                                    </span>
                                 </div>
                                 <div class="movie-actions">
                                     <button class="btn btn-sm btn-danger play-btn" 
-                                            data-movie-id="{{ rating.movie.id }}"
-                                            data-movie-title="{{ rating.movie.title }}">
+                                            data-movie-id="{{ movie.id }}"
+                                            data-movie-title="{{ movie.title }}">
                                         <i class="bi bi-play-fill"></i> Play
                                     </button>
-                                    <button class="btn btn-sm btn-warning rate-btn"
-                                            data-movie-id="{{ rating.movie.id }}"
-                                            data-movie-title="{{ rating.movie.title }}"
-                                            data-current-rating="{{ rating.rating }}">
-                                        <i class="bi bi-star-fill"></i> {{ rating.rating }}
+                                    <button class="btn btn-sm btn-outline-light remove-watchlist-btn"
+                                            data-movie-id="{{ movie.id }}"
+                                            data-movie-title="{{ movie.title }}">
+                                        <i class="bi bi-bookmark-x"></i> Remove
                                     </button>
                                 </div>
                             </div>
@@ -114,31 +149,98 @@
             </div>
             {% endfor %}
         </div>
-    </section>
-    {% endif %}
-
-    {% else %}
-    <!-- Empty State -->
-    <div class="text-center py-5">
-        <i class="bi bi-heart display-1 text-muted"></i>
-        <h3 class="text-muted mt-3">No recommendations yet</h3>
-        <p class="text-muted mb-4">Rate some movies to get personalized recommendations!</p>
-        <div class="hero-buttons">
-            <a href="{% url 'recommender:search' %}" class="btn btn-danger btn-lg me-3">
-                <i class="bi bi-search"></i> Browse Movies
-            </a>
-            <a href="{% url 'recommender:home' %}" class="btn btn-outline-light btn-lg">
-                <i class="bi bi-house"></i> Back to Home
-            </a>
+        {% else %}
+        <div class="text-center py-4">
+            <i class="bi bi-bookmark display-1 text-muted"></i>
+            <h4 class="text-muted mt-3">Danh sách của bạn đang trống</h4>
+            <p class="text-muted">Hãy thêm phim vào danh sách để xem chúng ở đây!</p>
         </div>
-    </div>
-    {% endif %}
+        {% endif %}
+    </section>
+
+    <!-- PHẦN 3: Gợi ý phim để thêm vào danh sách -->
+    <section class="movie-row mb-5">
+        <h2 class="section-title mb-3">
+            <i class="bi bi-plus-circle-fill text-success me-2"></i>Gợi ý phim để thêm vào danh sách
+        </h2>
+        <p class="text-light mb-4" style="font-size: 1.1rem; opacity: 0.9;">Các phim được gợi ý dựa trên thuật toán Hybrid, chưa có trong danh sách của bạn</p>
+        
+        <div class="alert alert-dark mb-4">
+            <h6 class="alert-heading">Hybrid Recommendation Algorithm</h6>
+            <p class="mb-2"><strong>Công thức:</strong> Score = 0.4 × Content-Based + 0.6 × Collaborative + Watchlist_Bonus</p>
+            <ul class="mb-0 small">
+                <li><strong>Content-Based:</strong> TF-IDF trên [genre + overview] → cosine similarity</li>
+                <li><strong>Collaborative:</strong> SVD (Surprise) dự đoán từ user-item matrix</li>
+                <li><strong>Watchlist Bonus:</strong> +0.2 nếu phim trong My List</li>
+            </ul>
+        </div>
+
+        {% if recommendations_for_watchlist %}
+        <div class="row movies-container">
+            {% for movie in recommendations_for_watchlist %}
+            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-4">
+                <div class="movie-card" data-movie-id="{{ movie.id }}">
+                    <div class="movie-poster-container">
+                        {% if movie.poster_url %}
+                        <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" class="movie-poster"
+                             style="width: 185px; height: 278px; object-fit: cover;"
+                             onerror="this.src='https://via.placeholder.com/185x278/333333/ffffff?text=No+Poster'">
+                        {% else %}
+                        <div class="movie-poster bg-secondary d-flex align-items-center justify-content-center"
+                             style="width: 185px; height: 278px;">
+                            <i class="bi bi-film text-light" style="font-size: 2rem;"></i>
+                        </div>
+                        {% endif %}
+                        <div class="movie-overlay">
+                            <div class="movie-info">
+                                <h6 class="movie-title">{{ movie.title }}</h6>
+                                <p class="movie-meta">
+                                    <span class="release-year">{{ movie.release_year }}</span>
+                                    <span class="genre">{{ movie.genre|default:"Unknown"|truncatewords:2 }}</span>
+                                </p>
+                                <div class="movie-rating mb-2">
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <span class="ms-1">
+                                        {% if movie.avg_rating %}
+                                            {{ movie.avg_rating|floatformat:1 }}/5.0
+                                        {% else %}
+                                            Chưa có đánh giá
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                <div class="movie-actions">
+                                    <button class="btn btn-sm btn-danger play-btn" 
+                                            data-movie-id="{{ movie.id }}"
+                                            data-movie-title="{{ movie.title }}">
+                                        <i class="bi bi-play-fill"></i> Play
+                                    </button>
+                                    <button class="btn btn-sm btn-success add-watchlist-btn"
+                                            data-movie-id="{{ movie.id }}"
+                                            data-movie-title="{{ movie.title }}">
+                                        <i class="bi bi-plus-circle"></i> Add to List
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <i class="bi bi-plus-circle display-1 text-muted"></i>
+            <h4 class="text-muted mt-3">Không có phim gợi ý mới</h4>
+            <p class="text-muted">Tất cả phim gợi ý đã có trong danh sách của bạn!</p>
+        </div>
+        {% endif %}
+    </section>
 </div>
 
 <!-- Rating Modal -->
 <div class="modal fade" id="ratingModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content bg-dark-custom text-light">
+        <div class="modal-content bg-dark text-light">
             <div class="modal-header border-secondary">
                 <h5 class="modal-title">Rate <span id="movieTitle"></span></h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -173,25 +275,7 @@
 {% block extra_js %}
 <script>
 $(document).ready(function(){
-    // Initialize carousels
-    $('.movie-carousel').owlCarousel({
-        loop: true,
-        margin: 15,
-        nav: true,
-        dots: false,
-        responsive: {
-            0: { items: 2 },
-            576: { items: 3 },
-            768: { items: 4 },
-            992: { items: 5 },
-            1200: { items: 6 }
-        },
-        navText: ['<i class="bi bi-chevron-left"></i>', '<i class="bi bi-chevron-right"></i>']
-    });
-});
-
-// Rating modal functionality for recommendations page
-document.addEventListener('DOMContentLoaded', function() {
+    // Rating modal functionality
     const ratingModal = new bootstrap.Modal(document.getElementById('ratingModal'));
     const movieTitleSpan = document.getElementById('movieTitle');
     const modalMovieId = document.getElementById('modalMovieId');
@@ -202,27 +286,16 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.addEventListener('click', function() {
             const movieId = this.dataset.movieId;
             const movieTitle = this.dataset.movieTitle;
-            const currentRating = this.dataset.currentRating;
             
             movieTitleSpan.textContent = movieTitle;
             modalMovieId.value = movieId;
-            ratingInput.value = currentRating || '3.0';
+            ratingInput.value = '3.0';
             
             // Reset star buttons
             starButtons.forEach(star => {
                 star.classList.remove('btn-warning');
                 star.classList.add('btn-outline-warning');
             });
-            
-            // Highlight stars up to current rating
-            if (currentRating) {
-                starButtons.forEach(star => {
-                    if (star.dataset.rating <= currentRating) {
-                        star.classList.add('btn-warning');
-                        star.classList.remove('btn-outline-warning');
-                    }
-                });
-            }
             
             ratingModal.show();
         });
@@ -263,21 +336,8 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Show success message
-                const alert = document.createElement('div');
-                alert.className = 'alert alert-success alert-dismissible fade show';
-                alert.innerHTML = `
-                    ${data.message}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                `;
-                document.querySelector('main').insertBefore(alert, document.querySelector('main').firstChild);
-                
                 ratingModal.hide();
-                
-                // Reload page to update recommendations
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1500);
+                window.location.reload();
             } else {
                 alert('Error: ' + JSON.stringify(data.errors));
             }
@@ -285,6 +345,82 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => {
             console.error('Error:', error);
             alert('An error occurred while submitting your rating.');
+        });
+    });
+
+    // Watchlist removal
+    document.querySelectorAll('.remove-watchlist-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const movieId = this.dataset.movieId;
+            const movieTitle = this.dataset.movieTitle;
+            
+            if (confirm(`Remove "${movieTitle}" from your watchlist?`)) {
+                fetch(`/watchlist/add/${movieId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error removing from watchlist.');
+                });
+            }
+        });
+    });
+
+    // Play button functionality - redirect to movie detail page
+    document.querySelectorAll('.play-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const movieId = this.dataset.movieId;
+            window.location.href = `/movie/${movieId}/`;
+        });
+    });
+
+    // Add to watchlist functionality for new section
+    document.querySelectorAll('.add-watchlist-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const movieId = this.dataset.movieId;
+            const movieTitle = this.dataset.movieTitle;
+            
+            fetch(`/watchlist/add/${movieId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success message
+                    const alert = document.createElement('div');
+                    alert.className = 'alert alert-success alert-dismissible fade show';
+                    alert.innerHTML = `
+                        ${data.message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    `;
+                    document.querySelector('main').insertBefore(alert, document.querySelector('main').firstChild);
+                    
+                    // Reload page to update all sections
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    alert('Error: ' + JSON.stringify(data.errors));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while adding to watchlist.');
+            });
         });
     });
 });

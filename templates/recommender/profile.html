@@ -13,14 +13,14 @@
                 <div>
                     <h1 class="section-title mb-1 text-light">{{ user.username }}</h1>
                     <p class="text-muted mb-0">
-                        <i class="bi bi-calendar me-1"></i>Member since {{ user.date_joined|date:"F Y" }}
+                        <i class="bi bi-calendar me-1"></i>Thành viên từ {{ user.date_joined|date:"F Y" }}
                     </p>
                     <div class="mt-2">
                         <span class="badge bg-danger me-2">
-                            <i class="bi bi-film"></i> {{ rated_movies|length }} Rated
+                            <i class="bi bi-film"></i> {{ rated_movies|length }} Đã đánh giá
                         </span>
                         <span class="badge bg-warning text-dark">
-                            <i class="bi bi-bookmark"></i> {{ watchlist_movies|length }} Watchlist
+                            <i class="bi bi-bookmark"></i> {{ watchlist_movies|length }} Danh sách theo dõi
                         </span>
                     </div>
                 </div>
@@ -33,14 +33,14 @@
         <li class="nav-item" role="presentation">
             <button class="nav-link active text-light" id="watchlist-tab" data-bs-toggle="tab" 
                     data-bs-target="#watchlist" type="button" role="tab">
-                <i class="bi bi-bookmark-fill me-2"></i>My Watchlist
+                <i class="bi bi-bookmark-fill me-2"></i>Danh sách theo dõi của tôi
                 <span class="badge bg-danger ms-2">{{ watchlist_movies|length }}</span>
             </button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link text-light" id="history-tab" data-bs-toggle="tab" 
                     data-bs-target="#history" type="button" role="tab">
-                <i class="bi bi-clock-fill me-2"></i>Rating History
+                <i class="bi bi-clock-fill me-2"></i>Lịch sử đánh giá
                 <span class="badge bg-warning text-dark ms-2">{{ rated_movies|length }}</span>
             </button>
         </li>
@@ -50,6 +50,22 @@
     <div class="tab-content" id="profileTabsContent">
         <!-- Watchlist Tab -->
         <div class="tab-pane fade show active" id="watchlist" role="tabpanel">
+            <!-- Watchlist Explanation -->
+            <div class="alert alert-info mb-4">
+                <div class="d-flex align-items-start">
+                    <i class="bi bi-info-circle-fill me-3 mt-1"></i>
+                    <div>
+                        <h6 class="alert-heading mb-2">Danh sách theo dõi là gì?</h6>
+                        <p class="mb-2">Đây là nơi bạn lưu những phim muốn xem sau. Thêm phim vào danh sách theo dõi giúp:</p>
+                        <ul class="mb-0 small">
+                            <li>Dễ dàng tìm lại phim bạn quan tâm</li>
+                            <li>Nhận đề xuất phim tương tự dựa trên sở thích của bạn</li>
+                            <li>Theo dõi tiến độ xem phim của bạn</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
             {% if watchlist_movies %}
             <div class="row">
                 {% for watchlist_item in watchlist_movies %}
@@ -58,7 +74,7 @@
                         <div class="movie-poster-container">
                             {% if watchlist_item.movie.poster_url %}
                             <img src="{{ watchlist_item.movie.poster_url }}" alt="{{ watchlist_item.movie.title }}" class="movie-poster"
-                                 onerror="this.src='https://via.placeholder.com/300x450/333333/ffffff?text=No+Image'">
+                                 onerror="this.src='https://via.placeholder.com/300x450/333333/ffffff?text=Không+có+hình'">
                             {% else %}
                             <div class="movie-poster bg-secondary d-flex align-items-center justify-content-center">
                                 <i class="bi bi-film text-light" style="font-size: 3rem;"></i>
@@ -69,18 +85,18 @@
                                     <h6 class="movie-title">{{ watchlist_item.movie.title }}</h6>
                                     <p class="movie-meta">
                                         <span class="release-year">{{ watchlist_item.movie.release_year }}</span>
-                                        <span class="genre">{{ watchlist_item.movie.genre|default:"Unknown"|truncatewords:3 }}</span>
+                                        <span class="genre">{{ watchlist_item.movie.genre|default:"Không rõ"|truncatewords:3 }}</span>
                                     </p>
                                     <div class="movie-actions">
                                         <button class="btn btn-sm btn-danger play-btn" 
                                                 data-movie-id="{{ watchlist_item.movie.id }}"
                                                 data-movie-title="{{ watchlist_item.movie.title }}">
-                                            <i class="bi bi-play-fill"></i> Play
+                                            <i class="bi bi-play-fill"></i> Phát
                                         </button>
                                         <button class="btn btn-sm btn-outline-light remove-watchlist-btn" 
                                                 data-movie-id="{{ watchlist_item.movie.id }}"
                                                 data-movie-title="{{ watchlist_item.movie.title }}">
-                                            <i class="bi bi-bookmark-x"></i> Remove
+                                            <i class="bi bi-bookmark-x"></i> Xóa
                                         </button>
                                     </div>
                                 </div>
@@ -93,10 +109,10 @@
             {% else %}
             <div class="text-center py-5">
                 <i class="bi bi-bookmark display-1 text-muted"></i>
-                <h3 class="text-muted mt-3">Your watchlist is empty</h3>
-                <p class="text-muted mb-4">Start adding movies to your watchlist to watch them later!</p>
+                <h3 class="text-muted mt-3">Danh sách theo dõi của bạn đang trống</h3>
+                <p class="text-muted mb-4">Hãy bắt đầu thêm phim vào danh sách theo dõi để xem sau!</p>
                 <a href="{% url 'recommender:search' %}" class="btn btn-danger btn-lg">
-                    <i class="bi bi-search"></i> Browse Movies
+                    <i class="bi bi-search"></i> Duyệt phim
                 </a>
             </div>
             {% endif %}
@@ -112,7 +128,7 @@
                         <div class="movie-poster-container">
                             {% if rating.movie.poster_url %}
                             <img src="{{ rating.movie.poster_url }}" alt="{{ rating.movie.title }}" class="movie-poster"
-                                 onerror="this.src='https://via.placeholder.com/300x450/333333/ffffff?text=No+Image'">
+                                 onerror="this.src='https://via.placeholder.com/300x450/333333/ffffff?text=Không+có+hình'">
                             {% else %}
                             <div class="movie-poster bg-secondary d-flex align-items-center justify-content-center">
                                 <i class="bi bi-film text-light" style="font-size: 3rem;"></i>
@@ -123,7 +139,7 @@
                                     <h6 class="movie-title">{{ rating.movie.title }}</h6>
                                     <p class="movie-meta">
                                         <span class="release-year">{{ rating.movie.release_year }}</span>
-                                        <span class="genre">{{ rating.movie.genre|default:"Unknown"|truncatewords:3 }}</span>
+                                        <span class="genre">{{ rating.movie.genre|default:"Không rõ"|truncatewords:3 }}</span>
                                     </p>
                                     <div class="movie-rating mb-2">
                                         <i class="bi bi-star-fill text-warning"></i>
@@ -133,7 +149,7 @@
                                         <button class="btn btn-sm btn-danger play-btn" 
                                                 data-movie-id="{{ rating.movie.id }}"
                                                 data-movie-title="{{ rating.movie.title }}">
-                                            <i class="bi bi-play-fill"></i> Play
+                                            <i class="bi bi-play-fill"></i> Phát
                                         </button>
                                         <button class="btn btn-sm btn-warning rate-btn" 
                                                 data-movie-id="{{ rating.movie.id }}"
@@ -152,10 +168,10 @@
             {% else %}
             <div class="text-center py-5">
                 <i class="bi bi-clock display-1 text-muted"></i>
-                <h3 class="text-muted mt-3">No ratings yet</h3>
-                <p class="text-muted mb-4">Start rating movies to build your personal taste profile!</p>
+                <h3 class="text-muted mt-3">Chưa có đánh giá nào</h3>
+                <p class="text-muted mb-4">Hãy bắt đầu đánh giá phim để xây dựng hồ sơ sở thích cá nhân của bạn!</p>
                 <a href="{% url 'recommender:search' %}" class="btn btn-danger btn-lg">
-                    <i class="bi bi-search"></i> Browse Movies
+                    <i class="bi bi-search"></i> Duyệt phim
                 </a>
             </div>
             {% endif %}
@@ -168,7 +184,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content bg-dark-custom text-light">
             <div class="modal-header border-secondary">
-                <h5 class="modal-title">Rate <span id="movieTitle"></span></h5>
+                <h5 class="modal-title">Đánh giá <span id="movieTitle"></span></h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -176,7 +192,7 @@
                     {% csrf_token %}
                     <input type="hidden" name="movie_id" id="modalMovieId">
                     <div class="mb-3">
-                        <label class="form-label text-light">Your Rating (1-5 stars)</label>
+                        <label class="form-label text-light">Đánh giá của bạn (1-5 sao)</label>
                         <div class="rating-stars mb-3 text-center">
                             {% for i in "12345" %}
                             <button type="button" class="btn btn-outline-warning star-btn" data-rating="{{ i }}">
@@ -190,8 +206,8 @@
                 </form>
             </div>
             <div class="modal-footer border-secondary">
-                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" form="ratingForm" class="btn btn-danger">Submit Rating</button>
+                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Hủy</button>
+                <button type="submit" form="ratingForm" class="btn btn-danger">Gửi đánh giá</button>
             </div>
         </div>
     </div>
@@ -206,7 +222,7 @@ $(document).ready(function(){
         const movieId = $(this).data('movie-id');
         const movieTitle = $(this).data('movie-title');
         
-        if (confirm(`Remove "${movieTitle}" from your watchlist?`)) {
+        if (confirm(`Xóa "${movieTitle}" khỏi danh sách theo dõi của bạn?`)) {
             $.ajax({
                 url: `/watchlist/add/${movieId}/`,
                 method: 'POST',
@@ -230,7 +246,7 @@ $(document).ready(function(){
                     }
                 },
                 error: function(xhr, status, error) {
-                    alert('Error removing from watchlist: ' + error);
+                    alert('Lỗi khi xóa khỏi danh sách theo dõi: ' + error);
                 }
             });
         }
@@ -324,12 +340,12 @@ $(document).ready(function(){
                     window.location.reload();
                 }, 1500);
             } else {
-                alert('Error: ' + JSON.stringify(data.errors));
+                alert('Lỗi: ' + JSON.stringify(data.errors));
             }
         })
         .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while submitting your rating.');
+            console.error('Lỗi:', error);
+            alert('Đã xảy ra lỗi khi gửi đánh giá của bạn.');
         });
     });
 });

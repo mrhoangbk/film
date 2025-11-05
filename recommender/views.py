@@ -22,9 +22,10 @@ def home(request):
         avg_rating=Avg('rating__rating')
     ).filter(avg_rating__isnull=False).order_by('-avg_rating')[:20]
     
-    # Lấy phim phổ biến (theo số lượng đánh giá)
+    # Lấy phim phổ biến (theo số lượng đánh giá) và thêm điểm trung bình
     popular_movies = Movie.objects.annotate(
-        rating_count=Count('rating')
+        rating_count=Count('rating'),
+        avg_rating=Avg('rating__rating')
     ).filter(rating_count__gt=0).order_by('-rating_count')[:20]
     
     # Lấy phim đề xuất cho người dùng đã đăng nhập
@@ -36,7 +37,9 @@ def home(request):
                 user_id=request.user.id, 
                 n=20
             )
-            recommended_movies = Movie.objects.filter(id__in=recommended_movie_ids)
+            recommended_movies = Movie.objects.filter(id__in=recommended_movie_ids).annotate(
+                avg_rating=Avg('rating__rating')
+            )
         except Exception as e:
             # Fallback: sử dụng phim phổ biến nếu đề xuất thất bại
             recommended_movies = popular_movies[:10]
@@ -59,42 +62,6 @@ def home(request):
     return render(request, 'recommender/home.html', context)
 
 
-@login_required
-def recommendations(request):
-    """Get movie recommendations for the logged-in user"""
-    try:
-        recommender = HybridRecommender()
-        recommended_movie_ids = recommender.get_recommendations(
-            user_id=request.user.id, 
-            n=20
-        )
-        
-        # Get movie objects
-        recommended_movies = Movie.objects.filter(id__in=recommended_movie_ids)
-        
-        # Get user's rated movies
-        user_ratings = Rating.objects.filter(user=request.user).select_related('movie')
-        
-        context = {
-            'recommended_movies': recommended_movies,
-            'user_ratings': user_ratings,
-        }
-        
-        return render(request, 'recommender/recommendations.html', context)
-        
-    except Exception as e:
-        messages.error(request, f"Error generating recommendations: {str(e)}")
-        
-        # Fallback: show popular movies
-        popular_movies = Movie.objects.all()[:20]
-        user_ratings = Rating.objects.filter(user=request.user).select_related('movie')
-        
-        context = {
-            'recommended_movies': popular_movies,
-            'user_ratings': user_ratings,
-        }
-        
-        return render(request, 'recommender/recommendations.html', context)
 
 
 @login_required
@@ -391,54 +358,9 @@ def load_more(request, category):
     return JsonResponse(response_data)
 
 
-# Cached views for better performance
-@cache_page(3600)  # Cache for 1 hour
-def home(request):
-    """Netflix-style home page with movie rows and carousels"""
-    # Get top rated movies (by average rating)
-    top_rated_movies = Movie.objects.annotate(
-        avg_rating=Avg('rating__rating')
-    ).filter(avg_rating__isnull=False).order_by('-avg_rating')[:20]
-    
-    # Get popular movies (by number of ratings)
-    popular_movies = Movie.objects.annotate(
-        rating_count=Count('rating')
-    ).filter(rating_count__gt=0).order_by('-rating_count')[:20]
-    
-    # Get recommended movies for logged-in users
-    recommended_movies = []
-    if request.user.is_authenticated:
-        try:
-            recommender = HybridRecommender()
-            recommended_movie_ids = recommender.get_recommendations(
-                user_id=request.user.id, 
-                n=20
-            )
-            recommended_movies = Movie.objects.filter(id__in=recommended_movie_ids)
-        except Exception as e:
-            # Fallback: use popular movies if recommendation fails
-            recommended_movies = popular_movies[:10]
-    
-    # Get unique genres for browse section
-    all_genres = Movie.objects.values_list('genre', flat=True).distinct()
-    unique_genres = set()
-    for genre_str in all_genres:
-        if genre_str:
-            genres = [g.strip() for g in genre_str.split('|')]
-            unique_genres.update(genres)
-    
-    context = {
-        'top_rated_movies': top_rated_movies,
-        'popular_movies': popular_movies,
-        'recommended_movies': recommended_movies,
-        'genres': sorted(unique_genres)[:12],  # Limit to 12 genres for display
-    }
-    
-    return render(request, 'recommender/home.html', context)
 
 
 @login_required
-@cache_page(1800)  # Cache for 30 minutes
 def recommendations(request):
     """Get movie recommendations for the logged-in user"""
     try:
@@ -448,15 +370,25 @@ def recommendations(request):
             n=20
         )
         
-        # Get movie objects
-        recommended_movies = Movie.objects.filter(id__in=recommended_movie_ids)
+        # Get movie objects for hybrid recommendations with ratings
+        hybrid_recommendations = Movie.objects.filter(id__in=recommended_movie_ids).annotate(
+            avg_rating=Avg('rating__rating')
+        )
         
-        # Get user's rated movies
-        user_ratings = Rating.objects.filter(user=request.user).select_related('movie')
+        # Get user's watchlist movies as Movie objects with ratings
+        watchlist_movies = Movie.objects.filter(watchlist__user=request.user).annotate(
+            avg_rating=Avg('rating__rating')
+        )
+        
+        # For the new section: recommendations for watchlist addition
+        # Use hybrid_recommendations but exclude movies already in watchlist
+        watchlist_movie_ids = watchlist_movies.values_list('id', flat=True)
+        recommendations_for_watchlist = hybrid_recommendations.exclude(id__in=watchlist_movie_ids)
         
         context = {
-            'recommended_movies': recommended_movies,
-            'user_ratings': user_ratings,
+            'hybrid_recommendations': hybrid_recommendations,
+            'watchlist_movies': watchlist_movies,
+            'recommendations_for_watchlist': recommendations_for_watchlist,
         }
         
         return render(request, 'recommender/recommendations.html', context)
@@ -464,13 +396,17 @@ def recommendations(request):
     except Exception as e:
         messages.error(request, f"Error generating recommendations: {str(e)}")
         
-        # Fallback: show popular movies
-        popular_movies = Movie.objects.all()[:20]
-        user_ratings = Rating.objects.filter(user=request.user).select_related('movie')
+        # Fallback: show popular movies with ratings
+        popular_movies = Movie.objects.all()[:20].annotate(
+            avg_rating=Avg('rating__rating')
+        )
+        watchlist_movies = Movie.objects.filter(watchlist__user=request.user).annotate(
+            avg_rating=Avg('rating__rating')
+        )
         
         context = {
-            'recommended_movies': popular_movies,
-            'user_ratings': user_ratings,
+            'hybrid_recommendations': popular_movies,
+            'watchlist_movies': watchlist_movies,
         }
         
         return render(request, 'recommender/recommendations.html', context)
