@@ -3,7 +3,7 @@ import os
 import sys
 import csv
 import pandas as pd
-from django.db import transaction
+from django.db import transaction, connection
 from datetime import datetime
 
 # Setup Django environment
@@ -174,6 +174,29 @@ def clear_existing_data():
     # Delete users created by previous imports (non-staff, non-superuser)
     User.objects.filter(username__startswith='user_', is_staff=False, is_superuser=False).delete()
     User.objects.filter(username='demo_user', is_staff=False, is_superuser=False).delete()
+    User.objects.filter(username='test_user', is_staff=False, is_superuser=False).delete()
+
+    # Reset auto-increment counters
+    print("Resetting auto-increment counters for tables...")
+    with connection.cursor() as cursor:
+        db_vendor = connection.vendor
+        if db_vendor == 'sqlite':
+            cursor.execute("DELETE FROM sqlite_sequence WHERE name IN ('recommender_movie', 'recommender_rating', 'recommender_watchlist', 'auth_user');")
+        elif db_vendor == 'postgresql':
+            # Note: This will also reset the user ID sequence.
+            # Be careful if you have important users you don't want to affect.
+            # The user deletion logic above should protect staff/superusers.
+            cursor.execute("TRUNCATE TABLE recommender_watchlist, recommender_rating, recommender_movie RESTART IDENTITY CASCADE;")
+            # We handle auth_user separately to avoid truncating staff/superusers
+            # This is more complex in PostgreSQL to reset if not empty, but deletion handles the test users.
+            # For a full reset including users, a more direct approach might be needed if non-test users are created.
+        elif db_vendor == 'mysql':
+            cursor.execute("TRUNCATE TABLE recommender_watchlist;")
+            cursor.execute("TRUNCATE TABLE recommender_rating;")
+            cursor.execute("TRUNCATE TABLE recommender_movie;")
+            # Be cautious with truncating auth_user in MySQL
+        else:
+            print(f"Warning: Auto-increment reset not implemented for database vendor: {db_vendor}")
     
     print("Existing data cleared successfully")
 
